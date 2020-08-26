@@ -1,0 +1,115 @@
+  swagger: '2.0'
+  info:
+    title: Employee API
+    description: Sample API on Cloud Endpoints with a Cloud Run, Google App Engine and Cloud Function as
+      backends.
+    version: 1.0.0
+  host: gateway-sfspxb3lqa-uc.a.run.app   #Replace with your gateway service name
+  schemes:
+    - https
+  produces:
+    - application/json
+  paths:
+    /employee/{employee_id}:
+      get:
+        summary: Get an Employee
+        operationId: getEmployee
+        x-google-backend:
+          address: https://us-central1-kubernetes-270011.cloudfunctions.net/employee #Replace with Cloud Function URL
+          protocol: h2
+        parameters:
+          - name: employee_id
+            in: path
+            description: Employee Id
+            required: true
+            type: string
+        responses:
+          '200':
+            description: A successful response
+            schema:
+              type: string
+          '404':
+            description: A Employee with the specified ID was not found.
+            schema:
+              type: string
+          '412':
+            description: Employee Id not provided
+            schema:
+              type: string
+        security:
+          - api_key: []
+      delete:
+        summary: Delete Employee using Google App Engine service.
+        operationId: deleteEmployee
+        x-google-backend:
+          address: https://kubernetes-270011.appspot.com  #Replace with your Google App Engine Service
+          path_translation: APPEND_PATH_TO_ADDRESS
+          jwt_audience: 496481458453-3b1bjb4lbt1853vqe6q1ii8hpfp8s90s.apps.googleusercontent.com
+          protocol: h2
+        parameters:
+          - name: employee_id
+            in: path
+            description: Employee Id
+            required: true
+            type: string
+        responses:
+          '200':
+            description: A successful response
+            schema:
+              type: string
+          '404':
+            description: A Employee with the specified ID was not found.
+            schema:
+              type: string
+        security:
+          - api_key: []
+    /employee:
+      post:
+        summary: Add Employee using Cloud Run Service
+        operationId: add_update_employee
+        x-google-backend:
+          address: https://employee-sfspxb3lqa-uc.a.run.app   #Replace with your Cloud Run Service.
+          path_translation: APPEND_PATH_TO_ADDRESS
+        parameters:
+          - name: employee
+            in: body
+            description: Employee to be Added
+            schema:
+              $ref: '#/definitions/Employee'
+        responses:
+          '200':
+            description: A successful response
+            schema:
+              type: string
+          '412':
+            description: Employee Id not provided
+            schema:
+              type: string
+        security:
+          - google_jwt: []
+  securityDefinitions:
+    # This section configures basic authentication with an API key.
+    api_key:
+      type: "apiKey"
+      name: "key"
+      in: "query"
+    google_jwt:
+      authorizationUrl: ""
+      flow: "implicit"
+      type: "oauth2"
+      x-google-issuer: "new-endpoint@kubernetes-270011.iam.gserviceaccount.com"
+      x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/new-endpoint@kubernetes-270011.iam.gserviceaccount.com"
+  definitions:
+    Employee:
+      type: object
+      required:
+       - id
+       - firstname
+       - lastname
+      properties:
+        id:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string

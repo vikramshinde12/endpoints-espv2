@@ -1,0 +1,5 @@
+/venv/
+.idea/
+/vik_README.md
+/cred/
+/cloud-endpoints/call_api.py

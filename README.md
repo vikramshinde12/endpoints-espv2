@@ -1,4 +1,4 @@
-#Overview
+# Overview
 
 ### Deployment of Cloud Endpoint secured with API Keys and Bearer for reaching private Cloud Function, private Cloud Run and IAP protected App Engine.
 
@@ -9,6 +9,6 @@ Following Components are used.
 * Cloud Endpoints ESPV2 Beta: Proxy service to control the requests.
 * Firestore: Store Employee data.
 
-![Architecture](https://github.com/vikramshinde12/endpoints-espv2/blob/master/Architecture.png)
+![Architecture](https://github.com/vikramshinde12/endpoints-espv2/blob/master/Architecture.jpg)
 
 The complete detail about this repo is available in the [please refer the blog](https://medium.com/@vikramshinde/secure-apis-in-cloud-run-cloud-functions-and-app-engine-using-cloud-endpoints-espv2-beta-b51b1c213aea)

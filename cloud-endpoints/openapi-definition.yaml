@@ -4,7 +4,7 @@
     description: Sample API on Cloud Endpoints with a Cloud Run, Google App Engine and Cloud Function as
       backends.
     version: 1.0.0
-  host: gateway-sfspxb3lqa-uc.a.run.app   #Replace with your gateway service name
+  host: gateway-6bpnwgtf6q-uc.a.run.app   #Replace with your gateway service name
   schemes:
     - https
   produces:
@@ -15,7 +15,7 @@
         summary: Get an Employee
         operationId: getEmployee
         x-google-backend:
-          address: https://us-central1-kubernetes-270011.cloudfunctions.net/employee #Replace with Cloud Function URL
+          address: https://us-central1-endpoints-demo1.cloudfunctions.net/employee #Replace with Cloud Function URL
           protocol: h2
         parameters:
           - name: employee_id
@@ -38,13 +38,16 @@
               type: string
         security:
           - api_key: []
+        x-google-quota:
+          metricCosts:
+            "api_requests": 1
       delete:
         summary: Delete Employee using Google App Engine service.
         operationId: deleteEmployee
         x-google-backend:
-          address: https://kubernetes-270011.appspot.com  #Replace with your Google App Engine Service
+          address: https://endpoints-demo1.appspot.com  #Replace with your Google App Engine Service
           path_translation: APPEND_PATH_TO_ADDRESS
-          jwt_audience: 496481458453-3b1bjb4lbt1853vqe6q1ii8hpfp8s90s.apps.googleusercontent.com
+          jwt_audience: 499537266481-brju9v4qpvr611jmmbs2ujv9p5sb7ecf.apps.googleusercontent.com
           protocol: h2
         parameters:
           - name: employee_id
@@ -62,13 +65,13 @@
             schema:
               type: string
         security:
-          - api_key: []
+          - google_jwt: []
     /employee:
       post:
         summary: Add Employee using Cloud Run Service
         operationId: add_update_employee
         x-google-backend:
-          address: https://employee-sfspxb3lqa-uc.a.run.app   #Replace with your Cloud Run Service.
+          address: https://employee-6bpnwgtf6q-uc.a.run.app   #Replace with your Cloud Run Service.
           path_translation: APPEND_PATH_TO_ADDRESS
         parameters:
           - name: employee
@@ -97,8 +100,8 @@
       authorizationUrl: ""
       flow: "implicit"
       type: "oauth2"
-      x-google-issuer: "new-endpoint@kubernetes-270011.iam.gserviceaccount.com"
-      x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/new-endpoint@kubernetes-270011.iam.gserviceaccount.com"
+      x-google-issuer: "endpoints@endpoints-demo1.iam.gserviceaccount.com"
+      x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/endpoints@endpoints-demo1.iam.gserviceaccount.com"
   definitions:
     Employee:
       type: object
@@ -113,3 +116,15 @@
           type: string
         lastname:
           type: string
+  x-google-management:
+    metrics:
+      - name: api_requests
+        valueType: INT64
+        metricKind: DELTA
+    quota:
+        limits:
+        - name: limit-on-api-requests
+          values:
+            STANDARD: 5
+          unit: "1/min/{project}"
+          metric: api_requests
